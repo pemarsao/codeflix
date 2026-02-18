@@ -1,0 +1,45 @@
+import { createSlice } from "@reduxjs/toolkit";
+import { RootState } from "../../app/store";
+
+interface Category {
+    id: string;
+    name: string;
+    description: string | null;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
+}
+
+const category: Category = {
+    id: "f638539b8b164dbe877d937e32df2823",
+    name: "Terror",
+    description: "Filme / Series de Terror",
+    is_active: true,
+    created_at: "2026-01-20T10:43:22.924909Z",
+    updated_at: "2026-01-20T10:44:37.423301Z",
+    deleted_at: null,
+}
+
+export const initialState = [
+    category,
+    {...category, id: "f638539b8b164dbe877d937e32df2821" , name: "Comédia"},
+    {...category, id: "f638539b8b164dbe877d937e32df2822" , name: "Drama"},
+    {...category, id: "f638539b8b164dbe877d937e32df2824" , name: "Ação"},
+    {...category, id: "f638539b8b164dbe877d937e32df2825" , name: "Ficção Científica"},
+]
+
+const categoriesSlice = createSlice({
+    name: 'categories',
+    initialState: initialState,
+    reducers: {
+        createCategory(state, action) {},
+        updateCategory(state, action) {},
+        deleteCategory(state, action) {},
+    }
+});
+
+export const selectCategories = (state: RootState) => state.categories;
+
+
+export default categoriesSlice.reducer;
