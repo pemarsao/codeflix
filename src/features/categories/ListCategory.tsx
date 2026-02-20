@@ -15,10 +15,10 @@ export const ListCategory = () => {
         createdAt: new Date(category.created_at).toLocaleDateString('pt-BR')
     }));
     const columns: GridColDef[] = [
-        { field: 'name', headerName: 'Name', flex: 1 },
+        { field: 'name', headerName: 'Name', flex: 1, renderCell: renderNameCell },
         { field: 'createdAt', headerName: 'Created At', flex: 1 },
-        { field: 'isActive', headerName: 'Active', flex: 1, type: "boolean", renderCell: renderIsActiveCell},
-        { field: 'id', headerName: 'Action', flex: 1, renderCell: renderActionsCell},
+        { field: 'isActive', headerName: 'Active', flex: 1, type: "boolean", renderCell: renderIsActiveCell },
+        { field: 'id', headerName: 'Action', flex: 1, renderCell: renderActionsCell },
 
     ];
 
@@ -42,6 +42,23 @@ export const ListCategory = () => {
         );
     }
 
+    function renderNameCell(rowData: GridRenderCellParams) {
+        return (
+            <Box
+            sx={{
+                display: "flex",
+                alignItems: "center",
+                height: "100%",
+                width: "100%",
+            }}
+            >
+                <Link style={{ textDecoration: "none"}} to={`/categories/edit/${rowData.id}`}>
+                    <Typography color="primary">{rowData.value}</Typography>
+                </Link>
+            </Box>
+        );
+    }
+
 
     return (
         <Box maxWidth="lg" sx={{mt: 4, mb: 4}}>
@@ -50,27 +67,23 @@ export const ListCategory = () => {
                     variant="contained"
                     color="secondary"
                     component={Link}
-                    to="/category/create"
+                    to="/categories/create"
                     style={{marginBottom: "1rem"}}
                 >
                     New Category
                 </Button>
             </Box>
 
-
-                {/* {categories.map((category) => 
-                    <Typography key={category.id}>{category.name}</Typography>
-                )} */}
-                <div style={{height: 400, width: '100%'}}>
-                    <DataGrid 
-                        showToolbar
-                        disableColumnFilter
-                        disableColumnSelector
-                        pageSizeOptions={[2, 5, 10, 25, 50, 100]}
-                        rows={rows} 
-                        columns={columns} 
-                    />
-                </div>
+            <Box sx={{ display: "flex", height: 600}}>
+                <DataGrid 
+                    showToolbar
+                    disableColumnFilter
+                    disableColumnSelector
+                    pageSizeOptions={[2, 5, 10, 25, 50, 100]}
+                    rows={rows} 
+                    columns={columns} 
+                />
+            </Box>
         </Box>
     );
 };
