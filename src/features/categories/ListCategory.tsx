@@ -1,12 +1,15 @@
 import { Box, Button, IconButton, Typography } from "@mui/material";
-import { useAppSelector } from "../../app/hooks";
-import { selectCategories } from "./categorySlice";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { deleteCategory, selectCategories } from "./categorySlice";
 import { Link } from "react-router-dom";
 import { DataGrid, GridColDef, GridRenderCellParams, GridRowsProp } from "@mui/x-data-grid";
 import DeleteIcon from '@mui/icons-material/Delete';
+import { closeSnackbar, useSnackbar } from "notistack";
 
 export const ListCategory = () => {
     const categories = useAppSelector(selectCategories);
+    const dispatch = useAppDispatch();
+    const enqueSnackBar = useSnackbar();
     const rows: GridRowsProp = categories.map((category) => ({
         id: category.id,
         name: category.name,
@@ -22,6 +25,11 @@ export const ListCategory = () => {
 
     ];
 
+    function handleDelete(id: string) {
+        dispatch(deleteCategory({id}));
+        enqueSnackBar.enqueueSnackbar("Category deleted successfully!", { variant: "success" });
+    }
+
     function renderIsActiveCell(rowData: GridRenderCellParams) {
         return (
             <Typography color={rowData.value ? "primary" : "secondary"}>
@@ -30,11 +38,12 @@ export const ListCategory = () => {
         );
     }
 
-    function renderActionsCell(rowData: GridRenderCellParams) {
+    function renderActionsCell(params: GridRenderCellParams) {
+    
         return (
             <IconButton
                 color="secondary"
-                onClick={() => console.log("clicked")}
+                onClick={() => handleDelete(params.value)}
                 aria-label="delete"
             >
                 <DeleteIcon />
