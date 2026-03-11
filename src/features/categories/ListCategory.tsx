@@ -14,6 +14,8 @@ export const ListCategory = () => {
     const categories = useAppSelector(selectCategories);
     const dispatch = useAppDispatch();
     const enqueSnackBar = useSnackbar();
+
+
     const rows: GridRowsProp = data ? data?.items.map((category) => ({
         id: category.id,
         name: category.name,
@@ -22,6 +24,8 @@ export const ListCategory = () => {
         createdAt: new Date(category.created_at).toLocaleDateString('pt-BR')
     }))
     : [];
+
+    
     const columns: GridColDef[] = [
         { field: 'name', headerName: 'Name', flex: 1, renderCell: renderNameCell },
         { field: 'createdAt', headerName: 'Created At', flex: 1 },
