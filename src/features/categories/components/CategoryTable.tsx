@@ -1,18 +1,19 @@
-import { GridColDef, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridFilterModel, GridRenderCellParams, GridRowsProp } from "@mui/x-data-grid";
 import { Results } from "../../../types/Category";
 import { Box, IconButton, Typography } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { GridPaginationModel } from "@mui/x-data-grid";
 
 type Props = {
     data: Results | undefined;
     perPage: number;
     isFetching: boolean;
-    rowsPerPage?: number;
-
-    handleOnPageChange: (page: number) => void;
+    rowsPerPage?: number[];
+    paginationModel: GridPaginationModel;
+    onPaginationChange: (model: GridPaginationModel) => void;
     handleFilterChange: (filterModel: GridFilterModel) => void;
-    handleOnPageSizeChange: (perPage: number) => void;
     handleDelete: (id: string) => void;
 };
 
@@ -20,10 +21,10 @@ export function CategoriesTable({
     data,
     perPage,
     isFetching,
-    rowsPerPage = 10,
-    handleOnPageChange,
+    rowsPerPage = [2, 5, 10, 25, 50, 100],
+    paginationModel,
+    onPaginationChange,
     handleFilterChange,
-    handleOnPageSizeChange,
     handleDelete,
 }: Props) {
 
@@ -72,4 +73,45 @@ export function CategoriesTable({
             </Box>
         );
     }
+
+    function mapDataToGridRows(data: Results) {
+        const { items: categories } = data;
+        return categories.map((category) => ({
+            id: category.id,
+            name: category.name,
+            description: category.description,
+            isActive: category.is_active,
+            createdAt: new Date(category.created_at).toLocaleDateString('pt-BR')
+        }));
+    }
+
+    const rows = data ? mapDataToGridRows(data) : [];
+    const rowCount = data ? data.total : 0;
+
+    return (
+        <Box sx={{ display: "flex", height: 600}}>
+            <DataGrid 
+                showToolbar
+                disableColumnFilter
+                disableColumnSelector
+                pageSizeOptions={rowsPerPage}
+                filterMode="server"
+                paginationMode="server"
+                rows={rows} 
+                rowCount={rowCount}
+                loading={isFetching}
+                columns={columns}
+                onFilterModelChange={handleFilterChange}
+                paginationModel={paginationModel}
+                onPaginationModelChange={onPaginationChange}
+                initialState={
+                    {
+                        pagination: {
+                            paginationModel: { pageSize: paginationModel.pageSize },
+                        },
+                    }
+                 }
+            />
+        </Box>
+    );
 }

@@ -1,22 +1,35 @@
 import { Box, Button, FormControl, FormControlLabel, FormGroup, Grid, Paper, Switch, TextField, Typography } from "@mui/material";
 import { Link, useParams } from "react-router-dom";
-import { Category, selectCategoryById, updateCategory } from "./categorySlice";
+import { Category, selectCategoryById, updateCategory, useGetCategoryByIdQuery, useUpdateCategoryMutation } from "./categorySlice";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CategoryForm } from "./components/CategoryForm";
 import { useSnackbar } from "notistack";
 
 export const EditCategory = () => {
     const id = useParams().id || "";
+    const { data: category, isFetching } = useGetCategoryByIdQuery(id);
     const [isDisabled, setIsDisabled] = useState(false);
-    const category = useAppSelector((state) => selectCategoryById(state, id));
-    const [categoryState, setCategoryState] = useState<Category>(category);
-    const dispatch = useAppDispatch();
+    const [categoryState, setCategoryState] = useState<Category>({
+        id: "",
+        name: "",
+        description: null,
+        is_active: false,
+        created_at: "",
+        updated_at: "",
+        deleted_at: null,
+    });
     const enqueSnackBar = useSnackbar();
+
+    useEffect(() => {
+        if (category) {
+            setCategoryState(category);
+        }
+    }, [category]);
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        dispatch(updateCategory(categoryState));
+        await updateCategory(categoryState);
         enqueSnackBar.enqueueSnackbar("Category updated successfully!", { variant: "success" });
     }
 

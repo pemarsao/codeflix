@@ -18,3 +18,10 @@ export interface Category {
     updated_at:  string;
     deleted_at:  string;
 }
+
+export interface CategoryParams {
+    perPage?: number;
+    search?: string;
+    page?: number;
+    isActive?: boolean;
+}

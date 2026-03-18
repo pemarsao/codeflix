@@ -1,11 +1,11 @@
 import { Box, Button, FormControl, FormControlLabel, FormGroup, Grid, Paper, Switch, TextField, Typography } from "@mui/material";
-import { useState } from "react";
-import { Category, createCategory } from "./categorySlice";
+import { useEffect, useState } from "react";
+import { Category, useCreateCategoryMutation } from "./categorySlice";
 import { CategoryForm } from "./components/CategoryForm";
-import { useAppDispatch } from "../../app/hooks";
 import { useSnackbar } from "notistack";
 
 export const CreateCategory = () => {
+    const [createCategory, status] = useCreateCategoryMutation();
     const [isDisabled, setIsDisabled] = useState(false);
     const [categoryState, setCategoryState] = useState<Category>({
         id: "",
@@ -16,14 +16,24 @@ export const CreateCategory = () => {
         updated_at: "",
         deleted_at: "",
     });
-    const dispatch = useAppDispatch();
     const enqueSnackBar = useSnackbar();
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        dispatch(createCategory(categoryState));
-        enqueSnackBar.enqueueSnackbar("Category created successfully!", { variant: "success" });
+        await createCategory(categoryState);
     }
+
+    useEffect(() => {
+        if (status.isLoading) {
+            setIsDisabled(true);
+            enqueSnackBar.enqueueSnackbar("Category created successfully!", { variant: "success" });
+        }
+        
+        if (status.isError) {
+            setIsDisabled(false);
+            enqueSnackBar.enqueueSnackbar("Failed to create category!", { variant: "error" });
+        }
+    }, [status.isLoading, status.isError, enqueSnackBar]);
 
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

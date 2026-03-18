@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 import { apiSlice } from "../api/apiSlice";
-import { Results, Result } from "../../types/Category";
+import { Results, Result, CategoryParams } from "../../types/Category";
 
 export interface Category {
     id: string;
@@ -15,21 +15,67 @@ export interface Category {
 
 const endpointUrl = "categories";
 
-function deleteCtegoryMutation(category: Category) {
+function deleteCategoryMutation(category: Category) {
     return {
         url: `${endpointUrl}/${category.id}`,
         method: "DELETE",
     }
 }
 
+function createCateforyMutation(category: Category) {
+    return {
+        url: endpointUrl,
+        method: "POST",
+        body: category,
+    }
+}
+
+function updateCategoryMutation(category: Category) {
+    return {
+        url: `${endpointUrl}/${category.id}`,
+        method: "PUT",
+        body: category,
+    }
+}
+
+function getCategories({page = 1, perPage = 10, search = ""}: CategoryParams) {
+    const param = { page, perPage, search, isActive: true }
+    return `${endpointUrl}?${parseCategoryParams(param)}`;
+}
+
+function getCategoryById(id: string) {
+    return `${endpointUrl}/${id}`;
+}
+
+function parseCategoryParams(params: CategoryParams) {
+    const queryParams = new URLSearchParams();
+    if (params.page) queryParams.append("page", params.page.toString());
+    if (params.perPage) queryParams.append("perPage", params.perPage.toString());
+    if (params.search) queryParams.append("search", params.search);
+    if (params.isActive !== undefined) queryParams.append("is_active", params.isActive.toString());
+    return queryParams.toString();
+}
+
 export const categoriesApiSlice = apiSlice.injectEndpoints({
     endpoints: ({ query, mutation }) => ({
-        getCategories: query<Results, void>({
-            query: () => `${endpointUrl}`,
+        getCategories: query<Results, CategoryParams>({
+            query: getCategories,
             providesTags: ["Categories"],
         }),
+        getCategoryById: query<Category, string>({
+            query: getCategoryById,
+            providesTags: ["Categories"],
+        }),
+        createCategory: mutation<Result, Category>({
+            query: createCateforyMutation,
+            invalidatesTags: ["Categories"],
+        }),
+        updateCategory: mutation<Result, Category>({
+            query: updateCategoryMutation,
+            invalidatesTags: ["Categories"],
+        }),
         deleteCategory: mutation<Result, {id: string }>({
-            query: deleteCtegoryMutation,
+            query: deleteCategoryMutation,
             invalidatesTags: ["Categories"],
         }),
     }),
@@ -89,4 +135,4 @@ export const selectCategoryById = (state: RootState, id: string) => {
 
 export default categoriesSlice.reducer;
 export const { createCategory, updateCategory, deleteCategory } = categoriesSlice.actions;
-export const { useGetCategoriesQuery, useDeleteCategoryMutation } = categoriesApiSlice;
+export const { useGetCategoriesQuery, useDeleteCategoryMutation, useCreateCategoryMutation, useUpdateCategoryMutation, useGetCategoryByIdQuery } = categoriesApiSlice;
