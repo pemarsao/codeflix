@@ -1,7 +1,6 @@
 import { Box, Button, FormControl, FormControlLabel, FormGroup, Grid, Paper, Switch, TextField, Typography } from "@mui/material";
 import { Link, useParams } from "react-router-dom";
-import { Category, selectCategoryById, updateCategory, useGetCategoryByIdQuery, useUpdateCategoryMutation } from "./categorySlice";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { Category, updateCategory, useGetCategoryByIdQuery, useUpdateCategoryMutation } from "./categorySlice";
 import { useEffect, useState } from "react";
 import { CategoryForm } from "./components/CategoryForm";
 import { useSnackbar } from "notistack";
@@ -9,6 +8,7 @@ import { useSnackbar } from "notistack";
 export const EditCategory = () => {
     const id = useParams().id || "";
     const { data: category, isFetching } = useGetCategoryByIdQuery(id);
+    const [updateCategory, status] = useUpdateCategoryMutation();
     const [isDisabled, setIsDisabled] = useState(false);
     const [categoryState, setCategoryState] = useState<Category>({
         id: "",
@@ -27,10 +27,19 @@ export const EditCategory = () => {
         }
     }, [category]);
 
+    useEffect(() => {
+        if (status.isSuccess) {
+            enqueSnackBar.enqueueSnackbar("Category updated successfully!", { variant: "success" });
+        } 
+        
+        if (status.isError) {
+            enqueSnackBar.enqueueSnackbar("Failed to update category!", { variant: "error" });
+        }
+    }, [status.isSuccess, status.isError, enqueSnackBar]);
+
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         await updateCategory(categoryState);
-        enqueSnackBar.enqueueSnackbar("Category updated successfully!", { variant: "success" });
     }
 
 
@@ -53,8 +62,8 @@ export const EditCategory = () => {
 
                 <CategoryForm
                     category={categoryState}
-                    isDisabled={isDisabled}
-                    isLoading={false}
+                    isDisabled={status.isLoading}
+                    isLoading={status.isLoading}
                     handleSubmit={handleSubmit}
                     handleChange={handleChange}
                     handleToggle={handleToggle}
