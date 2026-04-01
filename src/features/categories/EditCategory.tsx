@@ -9,7 +9,6 @@ export const EditCategory = () => {
     const id = useParams().id || "";
     const { data: category, isFetching } = useGetCategoryByIdQuery(id);
     const [updateCategory, status] = useUpdateCategoryMutation();
-    const [isDisabled, setIsDisabled] = useState(false);
     const [categoryState, setCategoryState] = useState<Category>({
         id: "",
         name: "",
