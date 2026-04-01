@@ -7,9 +7,9 @@ export const initialState: CastMember = {
     id: "",
     name: "",
     type: Type.Actor,
-    createdAt: "",
-    updatedAt: "",
-    deletedAt: "",
+    created_at: "",
+    updated_at: "",
+    deleted_at: "",
 };
 
 function parseCastMembersParams(params: CastMembersParams) {

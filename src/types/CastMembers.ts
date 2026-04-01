@@ -13,9 +13,9 @@ export interface CastMember {
     id:        string;
     name:      string;
     type:      Type;
-    createdAt: string;
-    updatedAt: string;
-    deletedAt: string;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string;
 }
 
 export enum Type {
