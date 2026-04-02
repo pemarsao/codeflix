@@ -26,9 +26,9 @@ function getCastMembers(params: CastMembersParams) {
     return `${endpointUrl}?${parseCastMembersParams({page, perPage, search, type})}`;
 }
 
-function deleteCastMember(id: {id: string}) {
+function deleteCastMember(castMember: CastMember) {
     return {
-        url: `${endpointUrl}/${id}`,
+        url: `${endpointUrl}/${castMember.id}`,
         method: "DELETE",
     }
 }
